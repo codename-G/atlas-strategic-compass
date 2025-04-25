@@ -4,7 +4,11 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { useDiagnostic } from "@/context/DiagnosticContext";
 import { Question } from "@/data/assessmentQuestions";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
+import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
+import { useForm } from "react-hook-form";
 
 interface QuestionCardProps {
   question: Question;
@@ -13,16 +17,15 @@ interface QuestionCardProps {
 
 const QuestionCard: React.FC<QuestionCardProps> = ({ question, onNext }) => {
   const { answers, addAnswer } = useDiagnostic();
-  const [selectedScore, setSelectedScore] = React.useState<number | null>(() => {
-    const existingAnswer = answers.find(
-      (a) => a.categoryId === question.category && a.questionId === question.id
-    );
-    return existingAnswer ? existingAnswer.score : null;
+  const form = useForm({
+    defaultValues: {
+      score: answers.find(
+        (a) => a.categoryId === question.category && a.questionId === question.id
+      )?.score?.toString() || "",
+    },
   });
 
   const handleScoreSelect = (score: number) => {
-    setSelectedScore(score);
-
     addAnswer({
       categoryId: question.category,
       questionId: question.id,
@@ -30,51 +33,51 @@ const QuestionCard: React.FC<QuestionCardProps> = ({ question, onNext }) => {
     });
   };
 
-  const handleNext = () => {
-    if (selectedScore !== null) {
-      onNext();
-    }
-  };
-
-  const scoreOptions = [1, 2, 3, 4, 5];
-
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
       transition={{ duration: 0.3 }}
-      className="flex flex-col"
+      className="flex flex-col max-w-2xl mx-auto"
     >
-      <h3 className="text-lg font-medium mb-6">{question.text}</h3>
+      <h3 className="text-lg font-medium mb-4">{question.text}</h3>
 
-      <div className="grid grid-cols-1 md:grid-cols-5 gap-3 mb-8">
-        {scoreOptions.map((score) => (
-          <button
-            key={score}
-            onClick={() => handleScoreSelect(score)}
-            className={cn(
-              "flex flex-col p-4 rounded-lg border transition-all",
-              selectedScore === score
-                ? "bg-atlas-blue text-white border-atlas-blue"
-                : "bg-secondary/50 hover:bg-secondary border-secondary/50 hover:border-secondary"
-            )}
-          >
-            <div className="flex justify-between items-center mb-2">
-              <span className="font-medium">Nível {score}</span>
-              <span className="h-6 w-6 rounded-full flex items-center justify-center border-2 border-current">
-                {score}
-              </span>
-            </div>
-            <p className="text-sm">{question.scoreDescriptions[score as keyof typeof question.scoreDescriptions]}</p>
-          </button>
-        ))}
-      </div>
+      <Form {...form}>
+        <FormField
+          control={form.control}
+          name="score"
+          render={({ field }) => (
+            <FormItem className="space-y-3 mb-6">
+              <RadioGroup
+                onValueChange={(value) => {
+                  field.onChange(value);
+                  handleScoreSelect(parseInt(value));
+                }}
+                defaultValue={field.value}
+                className="flex flex-col space-y-2"
+              >
+                {Object.entries(question.scoreDescriptions).map(([score, description]) => (
+                  <div key={score} className="flex items-center space-x-3 p-2 rounded-lg hover:bg-white/5">
+                    <RadioGroupItem value={score} id={`score-${score}`} />
+                    <Label
+                      htmlFor={`score-${score}`}
+                      className="flex-grow cursor-pointer text-sm"
+                    >
+                      {description}
+                    </Label>
+                  </div>
+                ))}
+              </RadioGroup>
+            </FormItem>
+          )}
+        />
+      </Form>
 
       <div className="flex justify-end">
         <Button
-          disabled={selectedScore === null}
-          onClick={handleNext}
+          disabled={!form.watch("score")}
+          onClick={onNext}
           className="bg-atlas-blue hover:bg-atlas-blue/90"
         >
           Continuar

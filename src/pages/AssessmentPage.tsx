@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
@@ -119,8 +118,8 @@ const AssessmentPage = () => {
       title="Avaliação Estratégica" 
       subtitle="Responda às perguntas para receber seu diagnóstico personalizado"
     >
-      <div className="space-y-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="space-y-6">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
           {categoryTypes.map(category => (
             <CategoryCard
               key={category}
@@ -133,19 +132,13 @@ const AssessmentPage = () => {
           ))}
         </div>
         
-        <div className="border-t border-atlas-white/10 pt-6 mt-6">
+        <div className="pt-4">
           {currentCategory && currentQuestion && (
             <>
               <div className="flex justify-between items-center mb-4">
                 <div className="flex items-center">
-                  {categories[currentCategory].icon === "pie-chart" && <PieChart className="w-5 h-5 mr-2" />}
-                  {categories[currentCategory].icon === "trending-up" && <TrendingUp className="w-5 h-5 mr-2" />}
-                  {categories[currentCategory].icon === "settings" && <Settings className="w-5 h-5 mr-2" />}
-                  {categories[currentCategory].icon === "users" && <Users className="w-5 h-5 mr-2" />}
-                  {categories[currentCategory].icon === "dollar-sign" && <DollarSign className="w-5 h-5 mr-2" />}
-                  {categories[currentCategory].icon === "package" && <Package className="w-5 h-5 mr-2" />}
-                  {categories[currentCategory].icon === "laptop" && <Laptop className="w-5 h-5 mr-2" />}
-                  <h3 className="font-medium">{categories[currentCategory].name}</h3>
+                  {getCategoryIcon(currentCategory)}
+                  <h3 className="font-medium ml-2">{categories[currentCategory].name}</h3>
                 </div>
                 <div className="text-sm text-muted-foreground">
                   Pergunta {currentQuestionIndex + 1} de {currentQuestions.length}
@@ -156,36 +149,31 @@ const AssessmentPage = () => {
                 question={currentQuestion} 
                 onNext={handleNextQuestion} 
               />
-              
-              <div className="flex justify-between mt-6">
-                <Button
-                  variant="ghost"
-                  onClick={handlePreviousQuestion}
-                  disabled={currentQuestionIndex === 0}
-                  className="flex items-center"
-                >
-                  <ArrowLeft className="w-4 h-4 mr-2" /> Anterior
-                </Button>
-                
-                {allCategoriesCompleted && (
-                  <Button 
-                    onClick={() => {
-                      calculateCategoryScores();
-                      determineCompanyStage();
-                      navigate("/results");
-                    }}
-                    className="bg-green-500 hover:bg-green-600"
-                  >
-                    Ver Resultados <CheckCircle className="w-4 h-4 ml-2" />
-                  </Button>
-                )}
-              </div>
             </>
           )}
         </div>
       </div>
     </DiagnosticLayout>
   );
+};
+
+const getCategoryIcon = (category: CategoryType) => {
+  switch (category) {
+    case "marketing":
+      return <PieChart className="w-5 h-5" />;
+    case "sales":
+      return <TrendingUp className="w-5 h-5" />;
+    case "processes":
+      return <Settings className="w-5 h-5" />;
+    case "people":
+      return <Users className="w-5 h-5" />;
+    case "financial":
+      return <DollarSign className="w-5 h-5" />;
+    case "product":
+      return <Package className="w-5 h-5" />;
+    case "technology":
+      return <Laptop className="w-5 h-5" />;
+  }
 };
 
 // Import the necessary icons
