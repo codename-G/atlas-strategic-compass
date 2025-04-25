@@ -1,4 +1,3 @@
-
 import React, { useEffect } from "react";
 import { motion } from "framer-motion";
 import {
@@ -12,17 +11,7 @@ import DiagnosticLayout from "@/components/DiagnosticLayout";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { useDiagnostic } from "@/context/DiagnosticContext";
-import {
-  categories,
-  getCategoryFeedback,
-  getCompanyStageFeedback,
-} from "@/data/assessmentQuestions";
+import { categories, getCategoryFeedback } from "@/data/assessmentQuestions";
 import {
   PieChart,
   TrendingUp,
@@ -31,9 +20,12 @@ import {
   DollarSign,
   Package,
   Laptop,
-  Info,
   ArrowRight,
+  Instagram
 } from "lucide-react";
+import { useDiagnostic } from "@/context/DiagnosticContext";
+import BusinessStageTimeline from "@/components/BusinessStageTimeline";
+import CategoryDetails from "@/components/CategoryDetails";
 
 const ResultsPage = () => {
   const {
@@ -46,7 +38,6 @@ const ResultsPage = () => {
   } = useDiagnostic();
 
   useEffect(() => {
-    // Recalculate scores if not already done
     if (overallScore === 0) {
       calculateCategoryScores();
       determineCompanyStage();
@@ -74,36 +65,20 @@ const ResultsPage = () => {
     }
   };
 
-  const getScoreClass = (score: number) => {
-    if (score < 2) return "bg-red-500 text-white";
-    if (score < 3) return "bg-yellow-500 text-white";
-    if (score < 4) return "bg-green-500 text-white";
-    return "bg-blue-500 text-white";
-  };
-
-  const getLevelText = (score: number) => {
-    if (score < 2) return "Inicial";
-    if (score < 3) return "Básico";
-    if (score < 4) return "Intermediário";
-    if (score < 4.5) return "Avançado";
-    return "Excelente";
-  };
-
-  const getStageBadgeClass = () => {
-    switch (companyStage) {
-      case "validation":
-        return "bg-red-500/20 text-red-300 border-red-500/50";
-      case "structuring":
-        return "bg-yellow-500/20 text-yellow-300 border-yellow-500/50";
-      case "initialScaling":
-        return "bg-green-500/20 text-green-300 border-green-500/50";
-      case "advancedScaling":
-        return "bg-blue-500/20 text-blue-300 border-blue-500/50";
-      case "marketReference":
-        return "bg-purple-500/20 text-purple-300 border-purple-500/50";
-      default:
-        return "bg-gray-500/20 text-gray-300 border-gray-500/50";
-    }
+  const getCategoryDetails = (category: string) => {
+    return {
+      description: "Análise detalhada do desempenho e oportunidades nesta área.",
+      opportunities: [
+        "Otimização dos processos atuais",
+        "Implementação de novas ferramentas",
+        "Treinamento da equipe"
+      ],
+      nextSteps: [
+        "Realizar análise detalhada dos indicadores",
+        "Definir metas específicas",
+        "Implementar melhorias prioritárias"
+      ]
+    };
   };
 
   const chartData = Object.keys(categoryScores).map((category) => ({
@@ -112,10 +87,6 @@ const ResultsPage = () => {
     fullScore: 5,
   }));
 
-  const stageFeedback = companyStage
-    ? getCompanyStageFeedback(companyStage)
-    : { title: "", description: "", suggestion: "" };
-
   return (
     <DiagnosticLayout
       title="Resultados do Diagnóstico"
@@ -123,46 +94,32 @@ const ResultsPage = () => {
       showProgress={false}
     >
       <div className="space-y-8">
-        <div className="bg-atlas-dark/50 rounded-lg p-6 glass">
+        <div className="glass rounded-lg p-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div className="flex flex-col justify-center">
               <h3 className="text-xl font-medium mb-2">
                 Diagnóstico da {profile.companyName || "Sua Empresa"}
               </h3>
               <p className="text-atlas-white/80 mb-6">
-                Baseado nas suas respostas, criamos um diagnóstico completo da
+                Com base nas suas respostas, criamos um diagnóstico completo da
                 sua empresa. Confira os resultados e descubra como otimizar sua
                 estratégia.
               </p>
-
               <div className="mb-6">
                 <Badge
                   variant="outline"
-                  className={`mb-2 text-sm px-3 py-1 ${getStageBadgeClass()}`}
+                  className="mb-2 text-sm px-3 py-1 border-atlas-blue/50 bg-atlas-blue/10 text-atlas-blue"
                 >
-                  {stageFeedback.title}
+                  {companyStage && getCompanyStageFeedback(companyStage).title}
                 </Badge>
-                <p className="text-atlas-white/80 mb-2">
-                  {stageFeedback.description}
-                </p>
-                <p className="text-sm text-atlas-blue">
-                  {stageFeedback.suggestion}
+                <p className="text-sm text-atlas-white/80">
+                  Pontuação média global: {overallScore.toFixed(1)}/5
                 </p>
               </div>
-
-              <p className="text-sm text-atlas-white/50">
-                Pontuação média global: {overallScore.toFixed(1)}/5
-              </p>
             </div>
-
             <div className="w-full h-[300px]">
               <ResponsiveContainer width="100%" height="100%">
-                <RadarChart
-                  cx="50%"
-                  cy="50%"
-                  outerRadius="80%"
-                  data={chartData}
-                >
+                <RadarChart cx="50%" cy="50%" outerRadius="80%" data={chartData}>
                   <PolarGrid stroke="#FFFFFF20" />
                   <PolarAngleAxis
                     dataKey="category"
@@ -181,83 +138,42 @@ const ResultsPage = () => {
           </div>
         </div>
 
-        <h3 className="text-lg font-medium border-b border-atlas-white/10 pb-2 mb-4">
-          Detalhamento por Categoria
-        </h3>
+        <div className="glass rounded-lg p-6">
+          <h3 className="text-lg font-medium mb-6">Estágio do seu Negócio</h3>
+          {companyStage && <BusinessStageTimeline currentStage={companyStage} />}
+        </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <div className="space-y-4">
+          <h3 className="text-lg font-medium">Detalhamento por Categoria</h3>
           {Object.keys(categoryScores).map((categoryKey) => {
             const category = categoryKey as keyof typeof categoryScores;
             const score = categoryScores[category];
             const { name } = categories[category];
             const feedback = getCategoryFeedback(score, category);
+            const details = getCategoryDetails(category);
 
             return (
-              <motion.div
+              <CategoryDetails
                 key={category}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3 }}
-                className="glass rounded-lg p-4"
-              >
-                <div className="flex items-start justify-between">
-                  <div className="flex items-center">
-                    <div className="p-2 rounded-full bg-atlas-dark/50 mr-3">
-                      {getCategoryIcon(category)}
-                    </div>
-                    <div>
-                      <h4 className="font-medium">{name}</h4>
-                      <div className="flex items-center mt-1">
-                        <div
-                          className={`text-xs font-semibold px-2 py-0.5 rounded-full ${getScoreClass(
-                            score
-                          )}`}
-                        >
-                          {score.toFixed(1)}
-                        </div>
-                        <span className="ml-2 text-sm text-atlas-white/70">
-                          {getLevelText(score)}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="h-8 w-8 p-0 rounded-full"
-                      >
-                        <Info className="h-4 w-4" />
-                        <span className="sr-only">Info</span>
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p className="max-w-xs">
-                        Baseado na média das respostas para as perguntas da
-                        categoria {name.toLowerCase()}.
-                      </p>
-                    </TooltipContent>
-                  </Tooltip>
-                </div>
-
-                <p className="text-sm text-atlas-white/80 mt-3">{feedback}</p>
-              </motion.div>
+                category={name}
+                score={score}
+                icon={getCategoryIcon(category)}
+                feedback={feedback}
+                details={details}
+              />
             );
           })}
         </div>
 
         <Card className="mt-8 bg-atlas-blue/10 border-atlas-blue/30">
           <CardHeader className="pb-2">
-            <CardTitle className="text-lg flex items-center">
-              <Info className="w-5 h-5 mr-2" /> Próximos Passos
-            </CardTitle>
+            <CardTitle className="text-lg">Próximos Passos</CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-atlas-white/80 mb-6">
-              Com base em seu diagnóstico, a Atlas Marketing Intelligence pode
-              ajudar a melhorar os pontos críticos e potencializar as forças da
-              sua estratégia.
+              Com base em seu diagnóstico, a Marketing Atlas pode ajudar a
+              melhorar os pontos críticos e potencializar as forças da sua
+              estratégia.
             </p>
             <Button className="bg-atlas-blue hover:bg-atlas-blue/90 flex items-center gap-2">
               Descubra como a IA da Marketing Atlas pode te ajudar
@@ -265,6 +181,18 @@ const ResultsPage = () => {
             </Button>
           </CardContent>
         </Card>
+
+        <footer className="text-center py-8 border-t border-atlas-white/10">
+          <a
+            href="https://instagram.com/marketingatlas"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 text-atlas-white/80 hover:text-atlas-blue transition-colors"
+          >
+            <Instagram className="w-5 h-5" />
+            🚀 Acompanhe conteúdos que vão acelerar o seu crescimento no Instagram!
+          </a>
+        </footer>
       </div>
     </DiagnosticLayout>
   );
