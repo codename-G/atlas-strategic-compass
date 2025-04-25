@@ -1,3 +1,4 @@
+
 import React, { useEffect } from "react";
 import { motion } from "framer-motion";
 import {
@@ -11,7 +12,7 @@ import DiagnosticLayout from "@/components/DiagnosticLayout";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { categories, getCategoryFeedback } from "@/data/assessmentQuestions";
+import { categories, getCategoryFeedback, getCompanyStageFeedback } from "@/data/assessmentQuestions";
 import {
   PieChart,
   TrendingUp,
