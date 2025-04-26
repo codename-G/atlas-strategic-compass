@@ -35,12 +35,14 @@ const CategoryDetails = ({ category, score, icon, feedback, details }: CategoryD
     return "bg-blue-500 text-white";
   };
 
+
+  
   return (
     <Collapsible open={isOpen} onOpenChange={setIsOpen}>
       <div className="glass p-4 rounded-lg">
         <div className="flex items-start justify-between">
           <div className="flex items-center">
-            <div className="p-2 rounded-full bg-atlas-dark/50 mr-3">
+            <div className="bg-white text-black dark:bg-black dark:text-white"">
               {icon}
             </div>
             <div>
