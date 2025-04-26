@@ -21,7 +21,6 @@ const AssessmentPage = () => {
     determineCompanyStage
   } = useDiagnostic();
   
-  // State for managing which question is being displayed
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [completedCategories, setCompletedCategories] = useState<CategoryType[]>([]);
   const [categoryProgress, setCategoryProgress] = useState<Record<CategoryType, number>>({
@@ -37,21 +36,18 @@ const AssessmentPage = () => {
   const categoryTypes = Object.keys(categories) as CategoryType[];
   
   useEffect(() => {
-    // If no category is selected, set the default to the first category
     if (!currentCategory) {
       setCurrentCategory("marketing");
     }
     
-    // Update the overall progress
     const totalQuestions = categoryTypes.reduce(
       (total, cat) => total + getQuestionsByCategory(cat).length, 
       0
     );
     const answeredQuestions = answers.length;
     
-    updateProgress(Math.round(((answeredQuestions / totalQuestions) * 67) + 33)); // 33% from Profile + up to 67% for Assessment
+    updateProgress(Math.round(((answeredQuestions / totalQuestions) * 67) + 33));
     
-    // Update progress for each category
     const newCategoryProgress = { ...categoryProgress };
     
     categoryTypes.forEach(cat => {
@@ -73,14 +69,13 @@ const AssessmentPage = () => {
   
   const handleCategorySelect = (category: CategoryType) => {
     setCurrentCategory(category);
-    setCurrentQuestionIndex(0); // Reset to the first question of the new category
+    setCurrentQuestionIndex(0);
   };
   
   const handleNextQuestion = () => {
     if (currentQuestionIndex < currentQuestions.length - 1) {
       setCurrentQuestionIndex(currentQuestionIndex + 1);
     } else {
-      // If this was the last question in the category
       const newCompletedCategories = [...completedCategories];
       
       if (currentCategory && !completedCategories.includes(currentCategory)) {
@@ -88,7 +83,6 @@ const AssessmentPage = () => {
         setCompletedCategories(newCompletedCategories);
       }
       
-      // Find the next incomplete category
       const nextCategory = categoryTypes.find(
         cat => !newCompletedCategories.includes(cat)
       );
@@ -97,7 +91,6 @@ const AssessmentPage = () => {
         setCurrentCategory(nextCategory);
         setCurrentQuestionIndex(0);
       } else {
-        // All categories are complete, calculate scores and navigate to results
         calculateCategoryScores();
         determineCompanyStage();
         navigate("/results");
@@ -119,7 +112,7 @@ const AssessmentPage = () => {
       subtitle="Responda às perguntas para receber seu diagnóstico personalizado"
     >
       <div className="space-y-6">
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
           {categoryTypes.map(category => (
             <CategoryCard
               key={category}
@@ -176,7 +169,6 @@ const getCategoryIcon = (category: CategoryType) => {
   }
 };
 
-// Import the necessary icons
 import { PieChart, TrendingUp, Settings, Users, DollarSign, Package, Laptop } from "lucide-react";
 
 export default AssessmentPage;

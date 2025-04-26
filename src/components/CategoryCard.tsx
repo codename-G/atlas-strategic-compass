@@ -1,11 +1,10 @@
-
 import React from "react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { CategoryType } from "@/context/DiagnosticContext";
 import { categories } from "@/data/assessmentQuestions";
 import { Badge } from "@/components/ui/badge";
-import { PieChart, BarChart, TrendingUp, Settings, Users, DollarSign, Package, Laptop } from "lucide-react";
+import { PieChart, TrendingUp, Settings, Users, DollarSign, Package, Laptop } from "lucide-react";
 
 interface CategoryCardProps {
   category: CategoryType;
@@ -63,23 +62,25 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
           )}>
             {getCategoryIcon(category)}
           </div>
-          <h3 className="font-medium">{name}</h3>
+          <h3 className="font-medium text-sm">{name}</h3>
         </div>
         
         {completed && (
-          <Badge variant="outline" className="bg-green-500/20 text-green-300 border-green-500/50">
+          <Badge variant="outline" className="bg-green-500/20 text-green-300 border-green-500/50 text-xs">
             Concluído
           </Badge>
         )}
         
         {current && !completed && (
-          <Badge variant="outline" className="bg-atlas-blue/20 text-atlas-blue border-atlas-blue/50">
+          <Badge variant="outline" className="bg-atlas-blue/20 text-atlas-blue border-atlas-blue/50 text-xs">
             Em progresso
           </Badge>
         )}
       </div>
       
-      <p className="text-sm text-muted-foreground mb-3">{description}</p>
+      {(current || window.innerWidth >= 768) && (
+        <p className="text-xs text-muted-foreground mb-3">{description}</p>
+      )}
       
       <div className="progress-bar-track">
         <div 

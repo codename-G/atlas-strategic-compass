@@ -1,4 +1,3 @@
-
 import React, { useEffect } from "react";
 import { motion } from "framer-motion";
 import {
@@ -27,6 +26,7 @@ import {
 import { useDiagnostic } from "@/context/DiagnosticContext";
 import BusinessStageTimeline from "@/components/BusinessStageTimeline";
 import CategoryDetails from "@/components/CategoryDetails";
+import ReferralProgram from "@/components/ReferralProgram";
 
 const ResultsPage = () => {
   const {
@@ -95,7 +95,7 @@ const ResultsPage = () => {
       showProgress={false}
     >
       <div className="space-y-8">
-        <div className="glass rounded-lg p-6">
+        <div className="glass rounded-lg p-6 bg-atlas-blue/5">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div className="flex flex-col justify-center">
               <h3 className="text-xl font-medium mb-2">
@@ -139,7 +139,7 @@ const ResultsPage = () => {
           </div>
         </div>
 
-        <div className="glass rounded-lg p-6">
+        <div className="glass rounded-lg p-6 bg-atlas-blue/5">
           <h3 className="text-lg font-medium mb-6">Estágio do seu Negócio</h3>
           {companyStage && <BusinessStageTimeline currentStage={companyStage} />}
         </div>
@@ -166,22 +166,7 @@ const ResultsPage = () => {
           })}
         </div>
 
-        <Card className="mt-8 bg-atlas-blue/10 border-atlas-blue/30">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-lg">Próximos Passos</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-atlas-white/80 mb-6">
-              Com base em seu diagnóstico, a Marketing Atlas pode ajudar a
-              melhorar os pontos críticos e potencializar as forças da sua
-              estratégia.
-            </p>
-            <Button className="bg-atlas-blue hover:bg-atlas-blue/90 flex items-center gap-2">
-              Descubra como a IA da Marketing Atlas pode te ajudar
-              <ArrowRight className="h-4 w-4" />
-            </Button>
-          </CardContent>
-        </Card>
+        <ReferralProgram />
 
         <footer className="text-center py-8 border-t border-atlas-white/10">
           <a
