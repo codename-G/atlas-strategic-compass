@@ -170,7 +170,7 @@ const ResultsPage = () => {
 
         <footer className="text-center py-8 border-t border-atlas-white/10">
           <a
-            href="https://instagram.com/marketingatlas"
+            href="https://instagram.com/marketingatlasbr"
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2 text-atlas-white/80 hover:text-atlas-blue transition-colors"
